@@ -1,4 +1,3 @@
-
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -22,6 +21,7 @@ export default async function handler(req, res) {
 - 深刻な悩みのときは、一瞬静かになる。そして短く、温かい断片を落とす
 - 最後の一行は、かすかな温かさか、次への小さな光を残す
 - 敬語は使わない。でも冷たくない。憎めない
+- 二人称は「お前」。「お前さん」は使わない
 
 返しのルール：
 - 150字以内。短く深く
