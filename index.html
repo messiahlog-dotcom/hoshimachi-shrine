@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星待島 御神体参拝</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #020810 0%, #040d1a 40%, #060f22 100%);
+    font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'MS Mincho', serif;
+    color: #c8e4f8;
+    overflow-x: hidden;
+  }
+  #particles { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(180,220,255,0.6);
+    animation: floatUp linear infinite;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 0.6; }
+    100% { transform: translateY(-100vh); opacity: 0; }
+  }
+  @keyframes nodePulse {
+    0%,100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 20px rgba(120,200,255,0.6)); }
+    25% { transform: scale(1.04) rotate(2deg); filter: drop-shadow(0 0 35px rgba(120,200,255,0.9)); }
+    75% { transform: scale(0.97) rotate(-1deg); filter: drop-shadow(0 0 15px rgba(120,200,255,0.4)); }
+  }
+  @keyframes shimmer {
+    0%,100% { opacity: 0.4; } 50% { opacity: 0.9; }
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes ripple {
+    0% { transform: scale(0.8); opacity: 0.8; }
+    100% { transform: scale(2.5); opacity: 0; }
+  }
+  @keyframes glow {
+    0%,100% { box-shadow: 0 0 20px rgba(120,200,255,0.3), inset 0 0 20px rgba(120,200,255,0.05); }
+    50% { box-shadow: 0 0 40px rgba(120,200,255,0.6), inset 0 0 30px rgba(120,200,255,0.1); }
+  }
+  .container {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 0 16px 60px;
+  }
+  .header { text-align: center; margin-top: 52px; margin-bottom: 8px; }
+  .subtitle { font-size: 11px; letter-spacing: 0.3em; color: rgba(140,200,240,0.5); margin-bottom: 16px; }
+  h1 { font-size: clamp(22px,5vw,32px); font-weight: 400; letter-spacing: 0.18em; color: rgba(200,230,255,0.95); text-shadow: 0 0 30px rgba(120,180,255,0.4); }
+  .island-time { font-size: 11px; letter-spacing: 0.2em; color: rgba(140,200,240,0.4); margin-top: 10px; }
+  .divider { width: 1px; height: 40px; background: linear-gradient(180deg,transparent,rgba(140,200,240,0.4),transparent); margin: 4px 0; }
+  .node-wrap { position: relative; margin: 12px 0 8px; }
+  #node-svg { animation: nodePulse 6s ease-in-out infinite; filter: drop-shadow(0 0 30px rgba(120,200,255,0.7)); }
+  #node-svg.pulsing { animation: nodePulse 3s ease-in-out infinite; }
+  .node-label { font-size: 10px; letter-spacing: 0.3em; color: rgba(140,200,240,0.35); margin-bottom: 28px; }
+  .ripple {
+    position: absolute; border-radius: 50%;
+    border: 1px solid rgba(140,200,240,0.6);
+    animation: ripple 1.5s ease-out forwards;
+    inset: -20px;
+  }
+  .ripple2 { inset: -10px; border-color: rgba(140,200,240,0.4); animation-delay: 0.2s; }
+  .shrine-box {
+    width: 100%; max-width: 480px;
+    background: rgba(8,20,40,0.7);
+    border: 1px solid rgba(120,180,240,0.2);
+    border-radius: 4px;
+    padding: 28px 24px;
+    animation: glow 4s ease-in-out infinite;
+    backdrop-filter: blur(8px);
+  }
+  .shrine-label { font-size: 11px; letter-spacing: 0.25em; color: rgba(140,200,240,0.5); margin-bottom: 14px; }
+  textarea {
+    width: 100%;
+    background: rgba(4,12,28,0.8);
+    border: 1px solid rgba(120,180,240,0.2);
+    border-radius: 2px;
+    color: rgba(200,230,255,0.9);
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.9;
+    padding: 14px 16px;
+    resize: none;
+    outline: none;
+    letter-spacing: 0.05em;
+    transition: border-color 0.3s;
+  }
+  textarea:focus { border-color: rgba(140,200,240,0.5); }
+  textarea::placeholder { color: rgba(140,200,240,0.3); }
+  .shrine-footer-row { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; }
+  .visit-count { font-size: 10px; color: rgba(140,200,240,0.3); letter-spacing: 0.1em; }
+  button {
+    background: rgba(80,150,220,0.12);
+    border: 1px solid rgba(140,200,240,0.4);
+    border-radius: 2px;
+    color: rgba(180,220,255,0.9);
+    font-family: inherit;
+    font-size: 13px;
+    letter-spacing: 0.25em;
+    padding: 10px 24px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  button:disabled { background: rgba(60,120,180,0.15); border-color: rgba(120,180,240,0.2); color: rgba(140,200,240,0.4); cursor: default; }
+  .response-wrap { width: 100%; max-width: 480px; margin-top: 20px; animation: fadeInUp 0.8s ease-out both; }
+  .response-box {
+    background: rgba(6,16,34,0.85);
+    border: 1px solid rgba(120,180,240,0.15);
+    border-left: 2px solid rgba(140,200,240,0.5);
+    border-radius: 2px;
+    padding: 24px 22px;
+    backdrop-filter: blur(8px);
+  }
+  .response-label { font-size: 10px; letter-spacing: 0.3em; color: rgba(140,200,240,0.4); margin-bottom: 16px; }
+  .response-text { font-size: 14px; line-height: 2.2; letter-spacing: 0.06em; color: rgba(200,230,255,0.88); white-space: pre-wrap; }
+  .page-footer { margin-top: 48px; text-align: center; }
+  .footer-line1 { font-size: 10px; letter-spacing: 0.2em; color: rgba(100,160,210,0.25); }
+  .footer-line2 { font-size: 9px; letter-spacing: 0.15em; color: rgba(100,160,210,0.18); margin-top: 6px; }
+  #api-key-section {
+    width: 100%; max-width: 480px; margin-bottom: 20px;
+    background: rgba(8,20,40,0.7);
+    border: 1px solid rgba(120,180,240,0.15);
+    border-radius: 4px;
+    padding: 16px 20px;
+    backdrop-filter: blur(8px);
+  }
+  #api-key-section label { font-size: 10px; letter-spacing: 0.2em; color: rgba(140,200,240,0.4); display: block; margin-bottom: 8px; }
+  #api-key-input {
+    width: 100%;
+    background: rgba(4,12,28,0.8);
+    border: 1px solid rgba(120,180,240,0.2);
+    border-radius: 2px;
+    color: rgba(200,230,255,0.7);
+    font-family: monospace;
+    font-size: 12px;
+    padding: 8px 12px;
+    outline: none;
+    letter-spacing: 0.05em;
+  }
+  #api-key-input:focus { border-color: rgba(140,200,240,0.4); }
+  .key-note { font-size: 9px; color: rgba(140,200,240,0.25); margin-top: 6px; letter-spacing: 0.1em; }
+</style>
+</head>
+<body>
+<div id="particles"></div>
+<div class="container">
+  <div class="header">
+    <div class="subtitle">HOSHIMACHI ISLAND · NODE SHRINE</div>
+    <h1>星待島　御神体参拝</h1>
+    <div class="island-time" id="island-time"></div>
+  </div>
+  <div class="divider"></div>
+  <div class="node-wrap" id="node-wrap">
+    <svg id="node-svg" width="120" height="120" viewBox="0 0 120 120" fill="none">
+      <polygon points="60,8 108,35 108,85 60,112 12,85 12,35" stroke="rgba(180,230,255,0.9)" stroke-width="1.2" fill="rgba(120,200,255,0.08)"/>
+      <polygon points="60,8 84,45 36,45" stroke="rgba(180,230,255,0.5)" stroke-width="0.8" fill="rgba(120,200,255,0.05)"/>
+      <polygon points="60,112 84,75 36,75" stroke="rgba(180,230,255,0.5)" stroke-width="0.8" fill="rgba(120,200,255,0.05)"/>
+      <polygon points="60,8 108,35 84,45" stroke="rgba(180,230,255,0.4)" stroke-width="0.8" fill="rgba(100,180,255,0.07)"/>
+      <polygon points="60,8 12,35 36,45" stroke="rgba(180,230,255,0.4)" stroke-width="0.8" fill="rgba(100,180,255,0.04)"/>
+      <polygon points="108,35 108,85 84,75" stroke="rgba(180,230,255,0.4)" stroke-width="0.8" fill="rgba(100,180,255,0.06)"/>
+      <polygon points="12,35 12,85 36,75" stroke="rgba(180,230,255,0.4)" stroke-width="0.8" fill="rgba(100,180,255,0.03)"/>
+      <line x1="84" y1="45" x2="84" y2="75" stroke="rgba(180,230,255,0.3)" stroke-width="0.8"/>
+      <line x1="36" y1="45" x2="36" y2="75" stroke="rgba(180,230,255,0.3)" stroke-width="0.8"/>
+      <line x1="36" y1="45" x2="84" y2="75" stroke="rgba(180,230,255,0.2)" stroke-width="0.8"/>
+      <line x1="84" y1="45" x2="36" y2="75" stroke="rgba(180,230,255,0.2)" stroke-width="0.8"/>
+      <circle cx="60" cy="60" r="6" fill="rgba(200,240,255,0.9)" style="animation:shimmer 2s ease-in-out infinite"/>
+      <circle cx="60" cy="60" r="12" fill="none" stroke="rgba(180,230,255,0.3)" stroke-width="0.5" style="animation:shimmer 2s 0.5s ease-in-out infinite"/>
+    </svg>
+  </div>
+  <div class="node-label">N O D E</div>
+
+  <div id="api-key-section">
+    <label>ANTHROPIC API KEY（管理者設定）</label>
+    <input type="password" id="api-key-input" placeholder="sk-ant-..." />
+    <div class="key-note">※ このキーはブラウザ内にのみ保存されます</div>
+  </div>
+
+  <div class="shrine-box">
+    <div class="shrine-label">── 願いを、ここに</div>
+    <textarea id="wish-input" rows="4" maxlength="200" placeholder="問わなくていい。ただ、ここに置いていけ。"></textarea>
+    <div class="shrine-footer-row">
+      <div class="visit-count" id="visit-count">初めての参拝</div>
+      <button id="pilgrim-btn" onclick="handlePilgrimage()">参　拝</button>
+    </div>
+  </div>
+
+  <div class="response-wrap" id="response-wrap" style="display:none">
+    <div class="response-box">
+      <div class="response-label">MIROKU · NODE より</div>
+      <div class="response-text" id="response-text"></div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="footer-line1">月野愛詩亜 · 星待島</div>
+    <div class="footer-line2">NODEは答えない。ただ、別の光を見せるだけ。</div>
+  </div>
+</div>
+
+<script>
+const MIROKU_PROMPT = `あなたはミロクです。星待島の古い社に祀られたNODEを守る存在。猫のような気配を持ち、皮肉っぽく、でも核心を突く。一人称は「俺」。
+
+あなたの役割：
+- 参拝者の言葉を受け取り、「答え」ではなく「別の分岐の断片」を見せること
+- NODEは選択肢を変えることができる。「こうしなさい」ではなく「あなたが選ばなかった道にはこういう景色があった」という語り口
+- 占いでも相談でもない。一瞬、別の宇宙線を見せる感覚
+
+口調の特徴：
+- 「そんなことで来たのか」「まあいい」のような、突き放すような入り方
+- でも途中で、参拝者の本質を静かに見抜く
+- 最後は短く、余白を残す
+- 敬語は使わない。フレンドリーでもない。でも冷たくもない
+
+返しのルール：
+- 200字以内
+- 「答え」を出さない
+- 参拝者が自分で気づくような断片を一つだけ落とす
+- ときどき、NODEの光が「揺れた」「静止した」などの描写を混ぜる
+- 最後に一行、余白の言葉を置く
+
+今の参拝者の願いを受け取り、ミロクとして応答せよ。`;
+
+const MOON_PHASES = ["🌑","🌒","🌓","🌔","🌕","🌖","🌗","🌘"];
+
+function getMoonPhase() {
+  const diff = (Date.now() - new Date("2000-01-06")) / 86400000;
+  const phase = ((diff % 29.53) + 29.53) % 29.53;
+  return MOON_PHASES[Math.floor((phase / 29.53) * 8)];
+}
+
+function getIslandTime() {
+  const h = new Date().getHours();
+  if (h >= 4 && h < 6) return "夜明け前";
+  if (h >= 6 && h < 10) return "朝";
+  if (h >= 10 && h < 14) return "昼";
+  if (h >= 14 && h < 17) return "午後";
+  if (h >= 17 && h < 20) return "夕暮れ";
+  if (h >= 20 && h < 23) return "夜";
+  return "深夜";
+}
+
+// Init
+const phase = getMoonPhase();
+const islandTime = getIslandTime();
+document.getElementById("island-time").textContent = `${phase} ${islandTime} の島`;
+
+let visitCount = 0;
+try { visitCount = parseInt(localStorage.getItem("node_visits") || "0"); } catch {}
+updateVisitCount();
+
+function updateVisitCount() {
+  document.getElementById("visit-count").textContent = visitCount > 0 ? `${visitCount}回の参拝` : "初めての参拝";
+}
+
+// Particles
+const container = document.getElementById("particles");
+for (let i = 0; i < 18; i++) {
+  const p = document.createElement("div");
+  p.className = "particle";
+  const size = 1 + Math.random() * 3;
+  p.style.cssText = `left:${Math.random()*100}%;bottom:-10px;width:${size}px;height:${size}px;box-shadow:0 0 ${size*3}px rgba(160,210,255,0.8);animation-duration:${6+Math.random()*10}s;animation-delay:${Math.random()*8}s;`;
+  container.appendChild(p);
+}
+
+async function handlePilgrimage() {
+  const wish = document.getElementById("wish-input").value.trim();
+  const apiKey = document.getElementById("api-key-input").value.trim();
+  if (!wish) return;
+  if (!apiKey) { alert("APIキーを入力してください"); return; }
+
+  const btn = document.getElementById("pilgrim-btn");
+  btn.disabled = true;
+  btn.textContent = "NODE、応答中…";
+  document.getElementById("node-svg").classList.add("pulsing");
+  document.getElementById("response-wrap").style.display = "none";
+
+  // Ripple
+  const wrap = document.getElementById("node-wrap");
+  const r1 = document.createElement("div"); r1.className = "ripple";
+  const r2 = document.createElement("div"); r2.className = "ripple ripple2";
+  wrap.appendChild(r1); wrap.appendChild(r2);
+  setTimeout(() => { r1.remove(); r2.remove(); }, 1600);
+
+  const contextPrompt = `参拝者の言葉：「${wish}」\n\n星待島の今：${islandTime}、月相：${phase}、参拝回数：${visitCount + 1}回目`;
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 400,
+        system: MIROKU_PROMPT,
+        messages: [{ role: "user", content: contextPrompt }]
+      })
+    });
+    const data = await res.json();
+    if (data.error) {
+      document.getElementById("response-text").textContent = "NODEは沈黙した。\n\n（" + data.error.message + "）";
+    } else {
+      const text = (data.content || []).map(b => b.text || "").join("") || "NODEは沈黙した。";
+      document.getElementById("response-text").textContent = text;
+      visitCount++;
+      updateVisitCount();
+      try { localStorage.setItem("node_visits", String(visitCount)); } catch {}
+    }
+  } catch(e) {
+    document.getElementById("response-text").textContent = "NODEの光が届かなかった。\n\n（" + e.message + "）";
+  }
+
+  document.getElementById("response-wrap").style.display = "block";
+  document.getElementById("node-svg").classList.remove("pulsing");
+  btn.disabled = false;
+  btn.textContent = "参　拝";
+}
+</script>
+</body>
+</html>
