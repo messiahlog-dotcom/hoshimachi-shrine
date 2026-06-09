@@ -123,29 +123,7 @@
   .page-footer { margin-top: 48px; text-align: center; }
   .footer-line1 { font-size: 10px; letter-spacing: 0.2em; color: rgba(100,160,210,0.25); }
   .footer-line2 { font-size: 9px; letter-spacing: 0.15em; color: rgba(100,160,210,0.18); margin-top: 6px; }
-  #api-key-section {
-    width: 100%; max-width: 480px; margin-bottom: 20px;
-    background: rgba(8,20,40,0.7);
-    border: 1px solid rgba(120,180,240,0.15);
-    border-radius: 4px;
-    padding: 16px 20px;
-    backdrop-filter: blur(8px);
-  }
-  #api-key-section label { font-size: 10px; letter-spacing: 0.2em; color: rgba(140,200,240,0.4); display: block; margin-bottom: 8px; }
-  #api-key-input {
-    width: 100%;
-    background: rgba(4,12,28,0.8);
-    border: 1px solid rgba(120,180,240,0.2);
-    border-radius: 2px;
-    color: rgba(200,230,255,0.7);
-    font-family: monospace;
-    font-size: 12px;
-    padding: 8px 12px;
-    outline: none;
-    letter-spacing: 0.05em;
-  }
-  #api-key-input:focus { border-color: rgba(140,200,240,0.4); }
-  .key-note { font-size: 9px; color: rgba(140,200,240,0.25); margin-top: 6px; letter-spacing: 0.1em; }
+
 </style>
 </head>
 <body>
@@ -175,12 +153,6 @@
     </svg>
   </div>
   <div class="node-label">N O D E</div>
-
-  <div id="api-key-section">
-    <label>ANTHROPIC API KEY（管理者設定）</label>
-    <input type="password" id="api-key-input" placeholder="sk-ant-..." />
-    <div class="key-note">※ このキーはブラウザ内にのみ保存されます</div>
-  </div>
 
   <div class="shrine-box">
     <div class="shrine-label">── 願いを、ここに</div>
@@ -273,9 +245,7 @@ for (let i = 0; i < 18; i++) {
 
 async function handlePilgrimage() {
   const wish = document.getElementById("wish-input").value.trim();
-  const apiKey = document.getElementById("api-key-input").value.trim();
   if (!wish) return;
-  if (!apiKey) { alert("APIキーを入力してください"); return; }
 
   const btn = document.getElementById("pilgrim-btn");
   btn.disabled = true;
@@ -293,26 +263,21 @@ async function handlePilgrimage() {
   const contextPrompt = `参拝者の言葉：「${wish}」\n\n星待島の今：${islandTime}、月相：${phase}、参拝回数：${visitCount + 1}回目`;
 
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
+    const res = await fetch("/api/shrine", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 400,
-        system: MIROKU_PROMPT,
-        messages: [{ role: "user", content: contextPrompt }]
+        wish: wish,
+        islandTime: islandTime,
+        phase: phase,
+        visitCount: visitCount + 1
       })
     });
     const data = await res.json();
     if (data.error) {
-      document.getElementById("response-text").textContent = "NODEは沈黙した。\n\n（" + data.error.message + "）";
+      document.getElementById("response-text").textContent = "NODEは沈黙した。\n\n（" + data.error + "）";
     } else {
-      const text = (data.content || []).map(b => b.text || "").join("") || "NODEは沈黙した。";
+      const text = data.response || "NODEは沈黙した。";
       document.getElementById("response-text").textContent = text;
       visitCount++;
       updateVisitCount();
