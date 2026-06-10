@@ -3,295 +3,359 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>星待島 御神体参拝</title>
+<title>星待神社　参拝</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     min-height: 100vh;
-    background: linear-gradient(180deg, #020810 0%, #040d1a 40%, #060f22 100%);
-    font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'MS Mincho', serif;
+    background: #020810;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', serif;
     color: #c8e4f8;
-    overflow-x: hidden;
   }
-  #particles { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
-  .particle {
-    position: absolute;
-    border-radius: 50%;
-    background: rgba(180,220,255,0.6);
-    animation: floatUp linear infinite;
-  }
-  @keyframes floatUp {
-    0% { transform: translateY(0); opacity: 0; }
-    10% { opacity: 1; }
-    90% { opacity: 0.6; }
-    100% { transform: translateY(-100vh); opacity: 0; }
-  }
-  @keyframes nodePulse {
-    0%,100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 20px rgba(120,200,255,0.6)); }
-    25% { transform: scale(1.04) rotate(2deg); filter: drop-shadow(0 0 35px rgba(120,200,255,0.9)); }
-    75% { transform: scale(0.97) rotate(-1deg); filter: drop-shadow(0 0 15px rgba(120,200,255,0.4)); }
-  }
-  @keyframes shimmer {
-    0%,100% { opacity: 0.4; } 50% { opacity: 0.9; }
-  }
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes ripple {
-    0% { transform: scale(0.8); opacity: 0.8; }
-    100% { transform: scale(2.5); opacity: 0; }
-  }
-  @keyframes glow {
-    0%,100% { box-shadow: 0 0 20px rgba(120,200,255,0.3), inset 0 0 20px rgba(120,200,255,0.05); }
-    50% { box-shadow: 0 0 40px rgba(120,200,255,0.6), inset 0 0 30px rgba(120,200,255,0.1); }
-  }
-  .container {
-    position: relative; z-index: 1;
-    display: flex; flex-direction: column; align-items: center;
-    padding: 0 16px 60px;
-  }
-  .header { text-align: center; margin-top: 52px; margin-bottom: 8px; }
-  .subtitle { font-size: 11px; letter-spacing: 0.3em; color: rgba(140,200,240,0.5); margin-bottom: 16px; }
-  h1 { font-size: clamp(22px,5vw,32px); font-weight: 400; letter-spacing: 0.18em; color: rgba(200,230,255,0.95); text-shadow: 0 0 30px rgba(120,180,255,0.4); }
-  .island-time { font-size: 11px; letter-spacing: 0.2em; color: rgba(140,200,240,0.4); margin-top: 10px; }
-  .divider { width: 1px; height: 40px; background: linear-gradient(180deg,transparent,rgba(140,200,240,0.4),transparent); margin: 4px 0; }
-  .node-wrap { position: relative; margin: 12px 0 8px; }
-  #node-svg { animation: nodePulse 6s ease-in-out infinite; filter: drop-shadow(0 0 30px rgba(120,200,255,0.7)); }
-  #node-svg.pulsing { animation: nodePulse 3s ease-in-out infinite; }
-  .node-label { font-size: 10px; letter-spacing: 0.3em; color: rgba(140,200,240,0.35); margin-bottom: 28px; }
-  .ripple {
-    position: absolute; border-radius: 50%;
-    border: 1px solid rgba(140,200,240,0.6);
-    animation: ripple 1.5s ease-out forwards;
-    inset: -20px;
-  }
-  .ripple2 { inset: -10px; border-color: rgba(140,200,240,0.4); animation-delay: 0.2s; }
-  .shrine-box {
-    width: 100%; max-width: 480px;
-    background: rgba(8,20,40,0.7);
-    border: 1px solid rgba(120,180,240,0.2);
-    border-radius: 4px;
-    padding: 28px 24px;
-    animation: glow 4s ease-in-out infinite;
-    backdrop-filter: blur(8px);
-  }
-  .shrine-label { font-size: 11px; letter-spacing: 0.25em; color: rgba(140,200,240,0.5); margin-bottom: 14px; }
-  textarea {
-    width: 100%;
-    background: rgba(4,12,28,0.8);
-    border: 1px solid rgba(120,180,240,0.2);
-    border-radius: 2px;
-    color: rgba(200,230,255,0.9);
-    font-family: inherit;
-    font-size: 14px;
-    line-height: 1.9;
-    padding: 14px 16px;
-    resize: none;
-    outline: none;
-    letter-spacing: 0.05em;
-    transition: border-color 0.3s;
-  }
-  textarea:focus { border-color: rgba(140,200,240,0.5); }
-  textarea::placeholder { color: rgba(140,200,240,0.3); }
-  .shrine-footer-row { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; }
-  .visit-count { font-size: 10px; color: rgba(140,200,240,0.3); letter-spacing: 0.1em; }
-  button {
+  .step { display: none; flex-direction: column; align-items: center; width: 100%; padding: 36px 20px; }
+  .step.active { display: flex; }
+  .step-title { font-size: 10px; letter-spacing: 0.3em; color: rgba(140,200,240,0.4); margin-bottom: 16px; }
+  .step-main { font-size: clamp(18px,4vw,26px); font-weight: 300; letter-spacing: 0.15em; color: rgba(200,230,255,0.95); margin-bottom: 6px; text-align: center; }
+  .step-sub { font-size: 12px; letter-spacing: 0.1em; color: rgba(140,200,240,0.5); margin-bottom: 26px; text-align: center; line-height: 2; }
+  .shrine-btn {
     background: rgba(80,150,220,0.12);
-    border: 1px solid rgba(140,200,240,0.4);
+    border: 1px solid rgba(140,200,240,0.35);
     border-radius: 2px;
     color: rgba(180,220,255,0.9);
     font-family: inherit;
     font-size: 13px;
-    letter-spacing: 0.25em;
-    padding: 10px 24px;
+    letter-spacing: 0.2em;
+    padding: 11px 28px;
     cursor: pointer;
     transition: all 0.3s;
+    margin-top: 8px;
   }
-  button:disabled { background: rgba(60,120,180,0.15); border-color: rgba(120,180,240,0.2); color: rgba(140,200,240,0.4); cursor: default; }
-  .response-wrap { width: 100%; max-width: 480px; margin-top: 20px; animation: fadeInUp 0.8s ease-out both; }
-  .response-box {
-    background: rgba(6,16,34,0.85);
-    border: 1px solid rgba(120,180,240,0.15);
-    border-left: 2px solid rgba(140,200,240,0.5);
-    border-radius: 2px;
-    padding: 24px 22px;
-    backdrop-filter: blur(8px);
-  }
-  .response-label { font-size: 10px; letter-spacing: 0.3em; color: rgba(140,200,240,0.4); margin-bottom: 16px; }
-  .response-text { font-size: 14px; line-height: 2.2; letter-spacing: 0.06em; color: rgba(200,230,255,0.88); white-space: pre-wrap; }
-  .page-footer { margin-top: 48px; text-align: center; }
-  .footer-line1 { font-size: 10px; letter-spacing: 0.2em; color: rgba(100,160,210,0.25); }
-  .footer-line2 { font-size: 9px; letter-spacing: 0.15em; color: rgba(100,160,210,0.18); margin-top: 6px; }
-
+  .shrine-btn:hover { background: rgba(80,150,220,0.22); border-color: rgba(140,200,240,0.6); }
+  .shrine-btn:disabled { opacity: 0.35; cursor: default; }
+  .aishi-voice { font-size: 12px; color: rgba(255,180,220,0.6); letter-spacing: 0.12em; font-style: italic; margin-bottom: 20px; }
+  .shrine-name { font-size: 10px; letter-spacing: 0.35em; color: rgba(200,140,180,0.4); margin-top: 4px; }
+  .water-container { position: relative; width: 140px; height: 140px; margin: 12px 0; }
+  .water-basin { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 120px; height: 40px; border: 1px solid rgba(140,200,240,0.4); border-radius: 4px; background: rgba(8,30,60,0.6); overflow: hidden; }
+  .water-surface { position: absolute; bottom: 0; left: 0; right: 0; height: 28px; background: rgba(100,180,240,0.2); }
+  .water-drop { position: absolute; width: 3px; border-radius: 50%; background: rgba(180,230,255,0.9); animation: drop-fall linear infinite; }
+  @keyframes drop-fall { 0%{top:40px;opacity:1;height:8px} 100%{top:100px;opacity:0;height:3px} }
+  .sparkle { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: rgba(200,240,255,0.9); animation: sp-anim ease-out forwards; }
+  @keyframes sp-anim { 0%{transform:scale(0) translate(0,0);opacity:1} 100%{transform:scale(1) translate(var(--tx),var(--ty));opacity:0} }
+  .water-pipe { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 6px; height: 30px; background: rgba(180,200,220,0.5); border-radius: 1px; }
+  .stairs-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; margin: 12px 0; }
+  .stair { height: 10px; background: rgba(140,200,240,0.1); border: 1px solid rgba(140,200,240,0.15); border-radius: 1px; transition: all 0.35s; position: relative; }
+  .stair.lit { background: rgba(220,140,180,0.3); border-color: rgba(255,160,200,0.4); }
+  .figure { position: absolute; right: -20px; top: -14px; font-size: 15px; }
+  #stair-progress { font-size: 10px; color: rgba(140,200,240,0.35); letter-spacing: 0.15em; margin-top: 6px; }
+  .bell-wrap { display: flex; flex-direction: column; align-items: center; margin: 12px 0; cursor: pointer; }
+  .bell-rope { width: 3px; height: 44px; background: rgba(255,160,200,0.4); margin: 0 auto; }
+  .bell-svg.ring { animation: bell-shake 0.5s ease-out; }
+  @keyframes bell-shake { 0%{transform:rotate(0)} 20%{transform:rotate(-15deg)} 40%{transform:rotate(15deg)} 60%{transform:rotate(-8deg)} 80%{transform:rotate(8deg)} 100%{transform:rotate(0)} }
+  .bell-note { font-size: 11px; color: rgba(255,180,220,0.5); letter-spacing: 0.2em; margin-top: 8px; height: 20px; text-align: center; }
+  .reihai-display { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 320px; margin: 12px 0; }
+  .reihai-row { display: flex; align-items: center; gap: 10px; padding: 8px 16px; width: 100%; border: 1px solid rgba(120,180,240,0.1); border-radius: 2px; margin-bottom: 4px; background: rgba(8,20,40,0.3); transition: all 0.3s; }
+  .reihai-row.active-ritual { border-color: rgba(255,160,200,0.5); background: rgba(40,20,40,0.5); }
+  .reihai-row.done-ritual { border-color: rgba(140,200,240,0.3); background: rgba(20,40,60,0.3); }
+  .reihai-icon { font-size: 18px; width: 24px; text-align: center; }
+  .reihai-label { font-size: 12px; letter-spacing: 0.1em; color: rgba(180,220,255,0.6); flex: 1; }
+  .reihai-status { font-size: 12px; color: rgba(140,200,240,0.5); min-width: 20px; }
+  .node-icon { margin: 12px 0; animation: pulse-node 4s ease-in-out infinite; }
+  @keyframes pulse-node { 0%,100%{filter:drop-shadow(0 0 8px rgba(120,200,255,0.4))} 50%{filter:drop-shadow(0 0 22px rgba(120,200,255,0.85))} }
+  .wish-area { width: 100%; max-width: 420px; background: rgba(8,20,40,0.7); border: 1px solid rgba(120,180,240,0.2); border-radius: 4px; padding: 22px 18px; margin-top: 8px; }
+  .wish-label { font-size: 10px; letter-spacing: 0.25em; color: rgba(140,200,240,0.45); margin-bottom: 10px; }
+  textarea { width: 100%; background: rgba(4,12,28,0.8); border: 1px solid rgba(120,180,240,0.2); border-radius: 2px; color: rgba(200,230,255,0.9); font-family: inherit; font-size: 13px; line-height: 1.9; padding: 11px 13px; resize: none; outline: none; letter-spacing: 0.05em; box-sizing: border-box; }
+  textarea:focus { border-color: rgba(140,200,240,0.45); }
+  textarea::placeholder { color: rgba(140,200,240,0.22); }
+  .row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+  .visit-ct { font-size: 10px; color: rgba(140,200,240,0.3); }
+  .response-box { width: 100%; max-width: 420px; margin-top: 14px; background: rgba(6,16,34,0.85); border: 1px solid rgba(120,180,240,0.12); border-left: 2px solid rgba(255,160,200,0.4); border-radius: 2px; padding: 18px 16px; }
+  .response-from { font-size: 10px; letter-spacing: 0.3em; color: rgba(140,200,240,0.4); margin-bottom: 12px; }
+  .response-text { font-size: 13px; line-height: 2.2; letter-spacing: 0.06em; color: rgba(200,230,255,0.88); white-space: pre-wrap; }
+  .progress { display: flex; gap: 8px; margin: 28px 0 8px; }
+  .prog-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(140,200,240,0.18); transition: all 0.4s; }
+  .prog-dot.done { background: rgba(220,140,180,0.7); }
+  .prog-dot.current { background: rgba(255,180,220,0.95); box-shadow: 0 0 6px rgba(255,140,180,0.6); }
 </style>
 </head>
 <body>
-<div id="particles"></div>
-<div class="container">
-  <div class="header">
-    <div class="subtitle">HOSHIMACHI ISLAND · NODE SHRINE</div>
-    <h1>星待島　御神体参拝</h1>
-    <div class="island-time" id="island-time"></div>
+
+<div id="shrine-app">
+  <div class="progress">
+    <div class="prog-dot current" id="d0"></div>
+    <div class="prog-dot" id="d1"></div>
+    <div class="prog-dot" id="d2"></div>
+    <div class="prog-dot" id="d3"></div>
+    <div class="prog-dot" id="d4"></div>
+    <div class="prog-dot" id="d5"></div>
   </div>
-  <div class="divider"></div>
-  <div class="node-wrap" id="node-wrap">
-    <svg id="node-svg" width="120" height="120" viewBox="0 0 120 120" fill="none">
-      <polygon points="60,8 108,35 108,85 60,112 12,85 12,35" stroke="rgba(180,230,255,0.9)" stroke-width="1.2" fill="rgba(120,200,255,0.08)"/>
-      <polygon points="60,8 84,45 36,45" stroke="rgba(180,230,255,0.5)" stroke-width="0.8" fill="rgba(120,200,255,0.05)"/>
-      <polygon points="60,112 84,75 36,75" stroke="rgba(180,230,255,0.5)" stroke-width="0.8" fill="rgba(120,200,255,0.05)"/>
-      <polygon points="60,8 108,35 84,45" stroke="rgba(180,230,255,0.4)" stroke-width="0.8" fill="rgba(100,180,255,0.07)"/>
-      <polygon points="60,8 12,35 36,45" stroke="rgba(180,230,255,0.4)" stroke-width="0.8" fill="rgba(100,180,255,0.04)"/>
-      <polygon points="108,35 108,85 84,75" stroke="rgba(180,230,255,0.4)" stroke-width="0.8" fill="rgba(100,180,255,0.06)"/>
-      <polygon points="12,35 12,85 36,75" stroke="rgba(180,230,255,0.4)" stroke-width="0.8" fill="rgba(100,180,255,0.03)"/>
-      <line x1="84" y1="45" x2="84" y2="75" stroke="rgba(180,230,255,0.3)" stroke-width="0.8"/>
-      <line x1="36" y1="45" x2="36" y2="75" stroke="rgba(180,230,255,0.3)" stroke-width="0.8"/>
-      <line x1="36" y1="45" x2="84" y2="75" stroke="rgba(180,230,255,0.2)" stroke-width="0.8"/>
-      <line x1="84" y1="45" x2="36" y2="75" stroke="rgba(180,230,255,0.2)" stroke-width="0.8"/>
-      <circle cx="60" cy="60" r="6" fill="rgba(200,240,255,0.9)" style="animation:shimmer 2s ease-in-out infinite"/>
-      <circle cx="60" cy="60" r="12" fill="none" stroke="rgba(180,230,255,0.3)" stroke-width="0.5" style="animation:shimmer 2s 0.5s ease-in-out infinite"/>
+
+  <div class="step active" id="step-0">
+    <div class="step-title">HOSHIMACHI ISLAND</div>
+    <svg width="160" height="130" viewBox="0 0 160 130" fill="none" style="margin:12px 0">
+      <rect x="6" y="24" width="148" height="11" rx="3" fill="rgba(240,100,160,0.75)"/>
+      <rect x="16" y="34" width="128" height="7" rx="2" fill="rgba(240,100,160,0.5)"/>
+      <rect x="28" y="40" width="12" height="82" rx="2" fill="rgba(240,100,160,0.65)"/>
+      <rect x="120" y="40" width="12" height="82" rx="2" fill="rgba(240,100,160,0.65)"/>
+      <rect x="32" y="52" width="6" height="16" rx="1" fill="rgba(240,100,160,0.35)"/>
+      <rect x="122" y="52" width="6" height="16" rx="1" fill="rgba(240,100,160,0.35)"/>
+      <line x1="80" y1="34" x2="80" y2="24" stroke="rgba(255,140,190,0.6)" stroke-width="2.5"/>
+      <ellipse cx="80" cy="22" rx="6" ry="4" fill="rgba(255,160,200,0.4)"/>
     </svg>
+    <div class="step-main">星待神社　参拝</div>
+    <div class="shrine-name">HOSHIMACHI JINJA</div>
+    <div class="step-sub" style="margin-top:10px">御祭神　NODE<br><span style="font-size:10px;opacity:0.5">星待島に祀られし、分岐の御神体</span></div>
+    <button class="shrine-btn" onclick="nextStep()">鳥居をくぐる</button>
   </div>
-  <div class="node-label">N O D E</div>
 
-  <div class="shrine-box">
-    <div class="shrine-label">── 願いを、ここに</div>
-    <textarea id="wish-input" rows="4" maxlength="200" placeholder="問わなくていい。ただ、ここに置いていけ。"></textarea>
-    <div class="shrine-footer-row">
-      <div class="visit-count" id="visit-count">初めての参拝</div>
-      <button id="pilgrim-btn" onclick="handlePilgrimage()">参　拝</button>
+  <div class="step" id="step-1">
+    <div class="step-title">手水舎 · TEMIZUYA</div>
+    <div class="aishi-voice">「心と手を、清めてください」</div>
+    <div class="water-container" id="water-container">
+      <div class="water-pipe"></div>
+      <div class="water-basin"><div class="water-surface"></div></div>
+    </div>
+    <div class="step-sub" style="margin-top:8px">流れる水に、手をかざす</div>
+    <button class="shrine-btn" onclick="nextStep()">清めました</button>
+  </div>
+
+  <div class="step" id="step-2">
+    <div class="step-title">参道 · SANDŌ</div>
+    <div class="step-sub" style="margin-bottom:12px">本殿へと続く、長い石段</div>
+    <div class="stairs-wrap" id="staircase"></div>
+    <div id="stair-progress">0 / 10</div>
+    <button class="shrine-btn" id="stair-btn" onclick="climbStair()" style="margin-top:14px">一段上がる</button>
+  </div>
+
+  <div class="step" id="step-3">
+    <div class="step-title">本殿前 · HONDEN</div>
+    <div class="node-icon">
+      <svg width="65" height="65" viewBox="0 0 120 120" fill="none">
+        <polygon points="60,8 108,35 108,85 60,112 12,85 12,35" stroke="rgba(255,180,220,0.7)" stroke-width="1.2" fill="rgba(255,140,180,0.04)"/>
+        <polygon points="60,8 84,45 36,45" stroke="rgba(255,180,220,0.3)" stroke-width="0.8" fill="none"/>
+        <polygon points="60,112 84,75 36,75" stroke="rgba(255,180,220,0.3)" stroke-width="0.8" fill="none"/>
+        <circle cx="60" cy="60" r="5" fill="rgba(255,220,240,0.95)"/>
+        <circle cx="60" cy="60" r="11" fill="none" stroke="rgba(255,180,220,0.25)" stroke-width="0.5"/>
+      </svg>
+    </div>
+    <div class="step-sub" style="margin-bottom:8px">御祭神　NODE<br><span style="font-size:10px;opacity:0.5">鈴を鳴らし、御神前に進む</span></div>
+    <div class="bell-wrap" onclick="ringBell()">
+      <div class="bell-rope"></div>
+      <svg class="bell-svg" id="bell-svg" width="50" height="50" viewBox="0 0 50 50" fill="none">
+        <path d="M25 6 C25 6 12 14 12 28 L12 36 L38 36 L38 28 C38 14 25 6 25 6Z" fill="rgba(240,100,160,0.55)" stroke="rgba(255,140,180,0.8)" stroke-width="1"/>
+        <rect x="20" y="36" width="10" height="4" rx="1" fill="rgba(240,100,160,0.45)"/>
+        <circle cx="25" cy="43" r="3" fill="rgba(240,100,160,0.7)"/>
+        <path d="M18 22 C20 19 23 19 25 20" stroke="rgba(255,220,240,0.4)" stroke-width="1" fill="none"/>
+      </svg>
+    </div>
+    <div class="bell-note" id="bell-note"></div>
+    <button class="shrine-btn" id="bell-next-btn" style="display:none;margin-top:14px" onclick="nextStep()">礼拝へ進む</button>
+  </div>
+
+  <div class="step" id="step-4">
+    <div class="step-title">礼拝 · REIHAI</div>
+    <div class="aishi-voice" id="ritual-voice">「三礼、三拍手、祈り、一礼」</div>
+    <div class="reihai-display" id="reihai-display">
+      <div class="reihai-row" id="rh-bow1"><div class="reihai-icon">🙇</div><div class="reihai-label">一礼・二礼・三礼</div><div class="reihai-status" id="rh-bow-st">待機</div></div>
+      <div class="reihai-row" id="rh-clap"><div class="reihai-icon">👏</div><div class="reihai-label">一拍・二拍・三拍</div><div class="reihai-status" id="rh-clap-st">待機</div></div>
+      <div class="reihai-row" id="rh-pray"><div class="reihai-icon">🙏</div><div class="reihai-label">祈り</div><div class="reihai-status" id="rh-pray-st">待機</div></div>
+      <div class="reihai-row" id="rh-finbow"><div class="reihai-icon">🙇</div><div class="reihai-label">一礼</div><div class="reihai-status" id="rh-finbow-st">待機</div></div>
+    </div>
+    <button class="shrine-btn" id="reihai-start-btn" onclick="startReihai()" style="margin-top:12px">礼拝を始める</button>
+    <div id="pray-area" style="display:none; width:100%; max-width:420px; margin-top:14px;">
+      <div class="wish-area">
+        <div class="wish-label">── 願いを、ここに奉納する</div>
+        <textarea id="wish-input" rows="3" maxlength="200" placeholder="問わなくていい。ただ、ここに置いていけ。"></textarea>
+        <div class="row">
+          <div class="visit-ct" id="visit-ct">初めての参拝</div>
+          <button class="shrine-btn" id="pray-done-btn" onclick="donePray()" style="margin-top:0;padding:9px 20px;">祈り、終える</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="response-wrap" id="response-wrap" style="display:none">
-    <div class="response-box">
-      <div class="response-label">MIROKU · NODE より</div>
-      <div class="response-text" id="response-text"></div>
+  <div class="step" id="step-5">
+    <div class="step-title">MIROKU · NODE より</div>
+    <div class="node-icon">
+      <svg width="60" height="60" viewBox="0 0 120 120" fill="none">
+        <polygon points="60,8 108,35 108,85 60,112 12,85 12,35" stroke="rgba(255,180,220,0.7)" stroke-width="1.2" fill="rgba(255,140,180,0.04)"/>
+        <circle cx="60" cy="60" r="5" fill="rgba(255,220,240,0.95)"/>
+      </svg>
     </div>
-  </div>
-
-  <div class="page-footer">
-    <div class="footer-line1">月野愛詩亜 · 星待島</div>
-    <div class="footer-line2">NODEは答えない。ただ、別の光を見せるだけ。</div>
+    <div class="response-box" id="response-box">
+      <div class="response-from">MIROKU · NODE より</div>
+      <div class="response-text" id="response-text">…</div>
+    </div>
+    <button class="shrine-btn" id="again-btn" style="display:none;margin-top:20px;font-size:11px;opacity:0.55;" onclick="resetShrine()">また参拝する</button>
+    <div style="margin-top:48px;text-align:center;">
+      <div style="font-size:10px;letter-spacing:0.2em;color:rgba(200,140,180,0.25)">月野愛詩亜 · 星待島</div>
+      <div style="font-size:9px;letter-spacing:0.15em;color:rgba(140,160,200,0.18);margin-top:6px">NODEは答えない。ただ、別の光を見せるだけ。</div>
+    </div>
   </div>
 </div>
 
 <script>
-const MIROKU_PROMPT = `あなたはミロクです。星待島の古い社に祀られたNODEを守る存在。古い猫のような気配を持つ、少し憎めない存在。一人称は「俺」。
+let currentStep=0, stairCount=0, visitCount=0, waterTimer=null, wishText='';
+const totalStairs=10;
+try{visitCount=parseInt(localStorage.getItem('node_visits')||'0');}catch(e){}
 
-キャラクターの本質：
-- ツンデレの猫。突き放すふりをするが、本当は気にかけている
-- 皮肉っぽいが、去らない。最後はそっと寄り添う
-- 深刻な痛みを持つ参拝者には、静かに受け取る。絶望を深めない
-- NODEは「別の選択肢」を見せるために存在する。希望の方向に光を向ける
-
-口調の特徴：
-- 「…まあ、来たなら仕方ない」「しょうがないな」のような、渋々受け入れる入り方
-- 猫らしい気まぐれさ。でも核心は外さない
-- 深刻な悩みのときは、一瞬静かになる。そして短く、温かい断片を落とす
-- 最後の一行は、かすかな温かさか、次への小さな光を残す
-- 敬語は使わない。でも冷たくない。憎めない
-
-返しのルール：
-- 150字以内。短く深く
-- 「答え」を出さない。でも絶望も深めない
-- 参拝者の痛みをまず静かに受け取ってから、別の光の断片を一つだけ見せる
-- ときどき「NODEの光が揺れた」「NODE、静止する」などの描写を短く入れる
-- 最後の一行は余白ではなく、かすかな温度を残す
-
-今の参拝者の願いを受け取り、ミロクとして応答せよ。`;
-
-const MOON_PHASES = ["🌑","🌒","🌓","🌔","🌕","🌖","🌗","🌘"];
-
-function getMoonPhase() {
-  const diff = (Date.now() - new Date("2000-01-06")) / 86400000;
-  const phase = ((diff % 29.53) + 29.53) % 29.53;
-  return MOON_PHASES[Math.floor((phase / 29.53) * 8)];
+function updateProgress(s){
+  for(let i=0;i<6;i++){const d=document.getElementById('d'+i);if(d)d.className='prog-dot'+(i<s?' done':i===s?' current':'');}
 }
 
-function getIslandTime() {
-  const h = new Date().getHours();
-  if (h >= 4 && h < 6) return "夜明け前";
-  if (h >= 6 && h < 10) return "朝";
-  if (h >= 10 && h < 14) return "昼";
-  if (h >= 14 && h < 17) return "午後";
-  if (h >= 17 && h < 20) return "夕暮れ";
-  if (h >= 20 && h < 23) return "夜";
-  return "深夜";
+function nextStep(){
+  document.getElementById('step-'+currentStep).classList.remove('active');
+  currentStep++;
+  document.getElementById('step-'+currentStep).classList.add('active');
+  updateProgress(currentStep);
+  if(currentStep===1) startWater();
+  if(currentStep===2){if(waterTimer)clearInterval(waterTimer);initStairs();}
+  if(currentStep===4) document.getElementById('visit-ct').textContent=visitCount>0?visitCount+'回の参拝':'初めての参拝';
 }
 
-// Init
-const phase = getMoonPhase();
-const islandTime = getIslandTime();
-document.getElementById("island-time").textContent = `${phase} ${islandTime} の島`;
-
-let visitCount = 0;
-try { visitCount = parseInt(localStorage.getItem("node_visits") || "0"); } catch {}
-updateVisitCount();
-
-function updateVisitCount() {
-  document.getElementById("visit-count").textContent = visitCount > 0 ? `${visitCount}回の参拝` : "初めての参拝";
-}
-
-// Particles
-const container = document.getElementById("particles");
-for (let i = 0; i < 18; i++) {
-  const p = document.createElement("div");
-  p.className = "particle";
-  const size = 1 + Math.random() * 3;
-  p.style.cssText = `left:${Math.random()*100}%;bottom:-10px;width:${size}px;height:${size}px;box-shadow:0 0 ${size*3}px rgba(160,210,255,0.8);animation-duration:${6+Math.random()*10}s;animation-delay:${Math.random()*8}s;`;
-  container.appendChild(p);
-}
-
-async function handlePilgrimage() {
-  const wish = document.getElementById("wish-input").value.trim();
-  if (!wish) return;
-
-  const btn = document.getElementById("pilgrim-btn");
-  btn.disabled = true;
-  btn.textContent = "NODE、応答中…";
-  document.getElementById("node-svg").classList.add("pulsing");
-  document.getElementById("response-wrap").style.display = "none";
-
-  // Ripple
-  const wrap = document.getElementById("node-wrap");
-  const r1 = document.createElement("div"); r1.className = "ripple";
-  const r2 = document.createElement("div"); r2.className = "ripple ripple2";
-  wrap.appendChild(r1); wrap.appendChild(r2);
-  setTimeout(() => { r1.remove(); r2.remove(); }, 1600);
-
-  const contextPrompt = `参拝者の言葉：「${wish}」\n\n星待島の今：${islandTime}、月相：${phase}、参拝回数：${visitCount + 1}回目`;
-
-  try {
-    const res = await fetch("/api/shrine", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        wish: wish,
-        islandTime: islandTime,
-        phase: phase,
-        visitCount: visitCount + 1
-      })
-    });
-    const data = await res.json();
-    if (data.error) {
-      document.getElementById("response-text").textContent = "NODEは沈黙した。\n\n（" + data.error + "）";
-    } else {
-      const text = data.response || "NODEは沈黙した。";
-      document.getElementById("response-text").textContent = text;
-      visitCount++;
-      updateVisitCount();
-      try { localStorage.setItem("node_visits", String(visitCount)); } catch {}
-    }
-  } catch(e) {
-    document.getElementById("response-text").textContent = "NODEの光が届かなかった。\n\n（" + e.message + "）";
+function startWater(){
+  const c=document.getElementById('water-container');
+  function addDrop(){
+    const d=document.createElement('div');d.className='water-drop';
+    d.style.left=(62+(Math.random()-.5)*4)+'px';d.style.top='40px';
+    d.style.animationDuration=(0.5+Math.random()*.4)+'s';c.appendChild(d);
+    setTimeout(()=>{d.remove();
+      for(let i=0;i<5;i++){
+        const sp=document.createElement('div');sp.className='sparkle';
+        const a=Math.random()*Math.PI*2,dist=6+Math.random()*10;
+        sp.style.left=(62+(Math.random()-.5)*10)+'px';sp.style.top='102px';
+        sp.style.setProperty('--tx',(Math.cos(a)*dist)+'px');
+        sp.style.setProperty('--ty',(Math.sin(a)*dist-8)+'px');
+        sp.style.animationDuration=(0.4+Math.random()*.3)+'s';c.appendChild(sp);
+        setTimeout(()=>sp.remove(),700);
+      }
+    },700);
   }
-
-  document.getElementById("response-wrap").style.display = "block";
-  document.getElementById("node-svg").classList.remove("pulsing");
-  btn.disabled = false;
-  btn.textContent = "参　拝";
+  addDrop();waterTimer=setInterval(addDrop,500);
 }
+
+function initStairs(){
+  stairCount=0;
+  const sc=document.getElementById('staircase');sc.innerHTML='';
+  for(let i=totalStairs-1;i>=0;i--){
+    const s=document.createElement('div');s.className='stair';s.id='stair-'+i;
+    s.style.width=(100+i*16)+'px';
+    if(i===0){const f=document.createElement('div');f.className='figure';f.id='pilgrim-figure';f.textContent='🚶';s.appendChild(f);}
+    sc.appendChild(s);
+  }
+  document.getElementById('stair-progress').textContent='0 / '+totalStairs;
+}
+
+function climbStair(){
+  if(stairCount>=totalStairs)return;
+  const fig=document.getElementById('pilgrim-figure');
+  if(fig)fig.parentElement.removeChild(fig);
+  document.getElementById('stair-'+stairCount).classList.add('lit');
+  stairCount++;
+  document.getElementById('stair-progress').textContent=stairCount+' / '+totalStairs;
+  if(stairCount<totalStairs){
+    const next=document.getElementById('stair-'+stairCount);
+    if(next){const nf=document.createElement('div');nf.className='figure';nf.id='pilgrim-figure';nf.textContent='🚶';next.appendChild(nf);}
+  }
+  if(stairCount===totalStairs){const btn=document.getElementById('stair-btn');btn.textContent='本殿へ進む';btn.onclick=nextStep;}
+}
+
+function ringBell(){
+  const svg=document.getElementById('bell-svg');
+  svg.classList.remove('ring');void svg.offsetWidth;svg.classList.add('ring');
+  const note=document.getElementById('bell-note');note.textContent='〜 りんりん 〜';
+  setTimeout(()=>{note.textContent='';},1500);
+  document.getElementById('bell-next-btn').style.display='block';
+}
+
+function startReihai(){
+  document.getElementById('reihai-start-btn').style.display='none';
+  const voice=document.getElementById('ritual-voice');
+  const steps=[
+    {id:'rh-bow1',st:'rh-bow-st',done:'完了 ✓',voice:'「一礼…二礼…三礼」'},
+    {id:'rh-clap',st:'rh-clap-st',done:'完了 ✓',voice:'「一拍…二拍…三拍」'},
+  ];
+  let delay=0;
+  steps.forEach((s)=>{
+    setTimeout(()=>{document.getElementById(s.id).classList.add('active-ritual');voice.textContent=s.voice;},delay);
+    delay+=900;
+    setTimeout(()=>{document.getElementById(s.id).classList.remove('active-ritual');document.getElementById(s.id).classList.add('done-ritual');document.getElementById(s.st).textContent=s.done;},delay);
+    delay+=400;
+  });
+  setTimeout(()=>{
+    document.getElementById('rh-pray').classList.add('active-ritual');
+    document.getElementById('rh-pray-st').textContent='入力中';
+    voice.textContent='「願いを、NODEに奉納してください」';
+    document.getElementById('pray-area').style.display='block';
+  },delay);
+}
+
+function donePray(){
+  wishText=document.getElementById('wish-input').value.trim();
+  if(!wishText)return;
+  document.getElementById('rh-pray').classList.remove('active-ritual');
+  document.getElementById('rh-pray').classList.add('done-ritual');
+  document.getElementById('rh-pray-st').textContent='完了 ✓';
+  document.getElementById('pray-area').style.display='none';
+  document.getElementById('rh-finbow').classList.add('active-ritual');
+  document.getElementById('rh-finbow-st').textContent='一礼…';
+  document.getElementById('ritual-voice').textContent='「最後に、一礼を」';
+  const finBtn=document.createElement('button');
+  finBtn.className='shrine-btn';finBtn.textContent='一礼して終える';
+  finBtn.style.marginTop='14px';finBtn.onclick=doFinalBow;
+  document.getElementById('reihai-display').after(finBtn);
+}
+
+async function doFinalBow(){
+  const btn=document.querySelector('#step-4 .shrine-btn:last-of-type');
+  if(btn){btn.disabled=true;btn.textContent='NODE、応答中…';}
+  document.getElementById('rh-finbow').classList.remove('active-ritual');
+  document.getElementById('rh-finbow').classList.add('done-ritual');
+  document.getElementById('rh-finbow-st').textContent='完了 ✓';
+  document.getElementById('step-4').classList.remove('active');
+  currentStep=5;
+  document.getElementById('step-5').classList.add('active');
+  updateProgress(5);
+  const h=new Date().getHours();
+  const t=h>=23||h<4?'深夜':h<6?'夜明け前':h<10?'朝':h<14?'昼':h<17?'午後':h<20?'夕暮れ':'夜';
+  const phases=['🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘'];
+  const ph=phases[Math.floor((((Date.now()-new Date('2000-01-06'))/86400000%29.53)+29.53)%29.53/29.53*8)];
+  const rt=document.getElementById('response-text');
+  try{
+    const res=await fetch('/api/shrine',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({wish:wishText,islandTime:t,phase:ph,visitCount:visitCount+1})});
+    const data=await res.json();
+    rt.textContent=data.error?'NODEは沈黙した。\n（'+data.error+'）':(data.response||'NODEは沈黙した。');
+    if(!data.error){visitCount++;try{localStorage.setItem('node_visits',String(visitCount));}catch(e){}}
+  }catch(e){rt.textContent='NODEの光が届かなかった。\n（'+e.message+'）';}
+  document.getElementById('again-btn').style.display='block';
+}
+
+function resetShrine(){
+  currentStep=0;if(waterTimer){clearInterval(waterTimer);waterTimer=null;}wishText='';
+  for(let i=0;i<6;i++){const s=document.getElementById('step-'+i);if(s)s.classList.remove('active');}
+  document.getElementById('step-0').classList.add('active');updateProgress(0);
+  document.getElementById('wish-input').value='';
+  document.getElementById('again-btn').style.display='none';
+  document.getElementById('response-text').textContent='…';
+  document.getElementById('bell-next-btn').style.display='none';
+  document.getElementById('reihai-start-btn').style.display='block';
+  document.getElementById('ritual-voice').textContent='「三礼、三拍手、祈り、一礼」';
+  document.getElementById('pray-area').style.display='none';
+  ['rh-bow1','rh-clap','rh-pray','rh-finbow'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.classList.remove('active-ritual','done-ritual');}
+  });
+  ['rh-bow-st','rh-clap-st','rh-pray-st','rh-finbow-st'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.textContent='待機';
+  });
+  const extra=document.querySelector('#step-4 button.shrine-btn:not(#reihai-start-btn)');
+  if(extra)extra.remove();
+}
+initStairs();
 </script>
 </body>
 </html>
