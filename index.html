@@ -17,7 +17,7 @@
     font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', serif;
     color: #c8e4f8;
   }
-  .step { display: none; flex-direction: column; align-items: center; width: 100%; padding: 36px 20px; }
+  .step { display: none; flex-direction: column; align-items: center; width: 100%; padding: 28px 16px; box-sizing: border-box; }
   .step.active { display: flex; }
   .step-title { font-size: 10px; letter-spacing: 0.3em; color: rgba(140,200,240,0.4); margin-bottom: 16px; }
   .step-main { font-size: clamp(18px,4vw,26px); font-weight: 300; letter-spacing: 0.15em; color: rgba(200,230,255,0.95); margin-bottom: 6px; text-align: center; }
@@ -66,16 +66,16 @@
   .reihai-status { font-size: 12px; color: rgba(140,200,240,0.5); min-width: 20px; }
   .node-icon { margin: 12px 0; animation: pulse-node 4s ease-in-out infinite; }
   @keyframes pulse-node { 0%,100%{filter:drop-shadow(0 0 8px rgba(120,200,255,0.4))} 50%{filter:drop-shadow(0 0 22px rgba(120,200,255,0.85))} }
-  .wish-area { width: 100%; max-width: 420px; background: rgba(8,20,40,0.7); border: 1px solid rgba(120,180,240,0.2); border-radius: 4px; padding: 22px 18px; margin-top: 8px; }
+  .wish-area { width: 100%; max-width: 420px; background: rgba(8,20,40,0.7); border: 1px solid rgba(120,180,240,0.2); border-radius: 4px; padding: 16px 14px; margin-top: 8px; box-sizing: border-box; }
   .wish-label { font-size: 10px; letter-spacing: 0.25em; color: rgba(140,200,240,0.45); margin-bottom: 10px; }
   textarea { width: 100%; background: rgba(4,12,28,0.8); border: 1px solid rgba(120,180,240,0.2); border-radius: 2px; color: rgba(200,230,255,0.9); font-family: inherit; font-size: 13px; line-height: 1.9; padding: 11px 13px; resize: none; outline: none; letter-spacing: 0.05em; box-sizing: border-box; }
   textarea:focus { border-color: rgba(140,200,240,0.45); }
   textarea::placeholder { color: rgba(140,200,240,0.22); }
   .row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
   .visit-ct { font-size: 10px; color: rgba(140,200,240,0.3); }
-  .response-box { width: 100%; max-width: 420px; margin-top: 14px; background: rgba(6,16,34,0.85); border: 1px solid rgba(120,180,240,0.12); border-left: 2px solid rgba(255,160,200,0.4); border-radius: 2px; padding: 18px 16px; }
+  .response-box { width: 100%; max-width: 420px; margin-top: 14px; background: rgba(6,16,34,0.85); border: 1px solid rgba(120,180,240,0.12); border-left: 2px solid rgba(255,160,200,0.4); border-radius: 2px; padding: 16px 14px; box-sizing: border-box; }
   .response-from { font-size: 10px; letter-spacing: 0.3em; color: rgba(140,200,240,0.4); margin-bottom: 12px; }
-  .response-text { font-size: 13px; line-height: 2.2; letter-spacing: 0.06em; color: rgba(200,230,255,0.88); white-space: pre-wrap; }
+  .response-text { font-size: 12px; line-height: 2.0; letter-spacing: 0.04em; color: rgba(200,230,255,0.88); white-space: pre-wrap; word-break: break-all; }
   .progress { display: flex; gap: 8px; margin: 28px 0 8px; }
   .prog-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(140,200,240,0.18); transition: all 0.4s; }
   .prog-dot.done { background: rgba(220,140,180,0.7); }
